@@ -6,10 +6,13 @@ end
 When /^entering the task "([^"]*)"$/ do |task|
   find('#new-task').fill_in 'name', :with => task
   find('a.create').click
+  wait(1)
 end
 
 When /^marking the task "([^"]*)" as done$/ do |task|
-  find('#tasks .task a.toggle').click
+  wait
+  find('#tasks .task a.destroy').click
+  wait(1)
 end
 
 Then /^they should see (#{NUMBER}) tasks? done$/ do |number|
@@ -18,11 +21,16 @@ Then /^they should see (#{NUMBER}) tasks? done$/ do |number|
 end
 
 Then /^they should see (#{NUMBER}) tasks? open$/ do |number|
-  wait
+  wait(1)
   all('#tasks .task .icon-star-empty').size.should eql number
 end
 
 Then /^they should see a blurb telling them they have (\d+) tasks left$/ do |number|
-  page.should have_content "has #{number} tasks left"
+  #save_and_open_page
+  if (number == 0)
+    page.should have_content "is complete"
+  else
+    page.should have_content "has #{number} tasks left"
+  end
 end
 
